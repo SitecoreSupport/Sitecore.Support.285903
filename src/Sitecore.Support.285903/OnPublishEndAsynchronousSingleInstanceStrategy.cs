@@ -5,11 +5,13 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Sitecore.ContentSearch;
 using Sitecore.ContentSearch.Diagnostics;
+using Sitecore.ContentSearch.Maintenance.Strategies;
 using Sitecore.Eventing;
 using Sitecore.Jobs;
 
-namespace Sitecore.ContentSearch.Maintenance.Strategies
+namespace Sitecore.Support.ContentSearch.Maintenance.Strategies
 {
   /// <summary>
   /// The on publish end asynchronous single instance strategy.
@@ -57,7 +59,7 @@ namespace Sitecore.ContentSearch.Maintenance.Strategies
       {
         this.ParallelForeachProxy.ForEach(this.Indexes, new ParallelOptions
         {
-          TaskScheduler = TaskSchedulerManager.GetLimitedConcurrencyLevelTaskSchedulerForIndexing(this.Indexes.Count + 1)
+          TaskScheduler = TaskSchedulerManager.LimitedConcurrencyLevelTaskSchedulerForIndexing
         },
           index => base.Run(data, index));
       }
