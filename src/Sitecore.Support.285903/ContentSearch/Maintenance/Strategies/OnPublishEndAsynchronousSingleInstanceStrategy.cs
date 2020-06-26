@@ -4,12 +4,15 @@ using System.Threading.Tasks;
 using Sitecore.ContentSearch;
 using Sitecore.ContentSearch.Diagnostics;
 using Sitecore.Eventing;
+using Sitecore.Threading;
 
 namespace Sitecore.Support.ContentSearch.Maintenance.Strategies
 {
   [DataContract]
   public class OnPublishEndAsynchronousSingleInstanceStrategy : Sitecore.ContentSearch.Maintenance.Strategies.OnPublishEndAsynchronousSingleInstanceStrategy
   {
+    public int MaxConcurrency { get; set; }
+
     public OnPublishEndAsynchronousSingleInstanceStrategy(string database)
       : base(database)
     {
@@ -41,7 +44,7 @@ namespace Sitecore.Support.ContentSearch.Maintenance.Strategies
       {
         this.ParallelForeachProxy.ForEach(this.Indexes, new ParallelOptions
         {
-          TaskScheduler = TaskSchedulerManager.GetLimitedConcurrencyLevelTaskSchedulerForIndexing(this.Indexes.Count + 1)
+          TaskScheduler = new LimitedConcurrencyLevelTaskScheduler(MaxConcurrency)
         },
           index => base.Run(data, index));
       }
