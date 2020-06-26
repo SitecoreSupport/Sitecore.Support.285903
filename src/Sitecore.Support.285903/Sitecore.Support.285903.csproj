@@ -57,7 +57,7 @@
     <Reference Include="System.Configuration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="OnPublishEndAsynchronousSingleInstanceStrategy.cs" />
+    <Compile Include="ContentSearch\Maintenance\Strategies\OnPublishEndAsynchronousSingleInstanceStrategy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

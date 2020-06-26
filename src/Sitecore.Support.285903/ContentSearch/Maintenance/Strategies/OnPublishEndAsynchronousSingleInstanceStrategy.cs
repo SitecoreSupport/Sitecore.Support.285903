@@ -1,41 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Sitecore.ContentSearch;
 using Sitecore.ContentSearch.Diagnostics;
-using Sitecore.ContentSearch.Maintenance.Strategies;
 using Sitecore.Eventing;
-using Sitecore.Jobs;
 
 namespace Sitecore.Support.ContentSearch.Maintenance.Strategies
 {
-  /// <summary>
-  /// The on publish end asynchronous single instance strategy.
-  /// </summary>
   [DataContract]
-  public class OnPublishEndAsynchronousSingleInstanceStrategy : OnPublishEndAsynchronousStrategy
+  public class OnPublishEndAsynchronousSingleInstanceStrategy : Sitecore.ContentSearch.Maintenance.Strategies.OnPublishEndAsynchronousSingleInstanceStrategy
   {
-    /// <summary>
-    /// Inherits the class <see cref="BaseAsynchronousStrategy"/> class.
-    /// </summary>
-    /// <param name="database">
-    /// The database.
-    /// </param>
     public OnPublishEndAsynchronousSingleInstanceStrategy(string database)
       : base(database)
     {
     }
 
-    /// <summary>
-    /// Runs the pipeline.
-    /// </summary>
     public override void Run()
     {
-      EventManager.RaiseQueuedEvents(); // in order to prevent indexing out-of-date data we have to force processing queued events before reading queue.
+      EventManager.RaiseQueuedEvents();
 
       var eventQueue = this.Database.RemoteEvents.Queue;
 
@@ -59,7 +41,7 @@ namespace Sitecore.Support.ContentSearch.Maintenance.Strategies
       {
         this.ParallelForeachProxy.ForEach(this.Indexes, new ParallelOptions
         {
-          TaskScheduler = TaskSchedulerManager.LimitedConcurrencyLevelTaskSchedulerForIndexing
+          TaskScheduler = TaskSchedulerManager.GetLimitedConcurrencyLevelTaskSchedulerForIndexing(this.Indexes.Count + 1)
         },
           index => base.Run(data, index));
       }
